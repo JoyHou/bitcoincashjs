@@ -1,6 +1,6 @@
 'use strict';
 
-var Address = require('../address');
+var Address;
 var BufferReader = require('../encoding/bufferreader');
 var BufferWriter = require('../encoding/bufferwriter');
 var Hash = require('../crypto/hash');
@@ -25,6 +25,7 @@ var JSUtil = require('../util/js');
  * @param {Object|string|Buffer=} from optional data to populate script
  */
 var Script = function Script(from) {
+    Address = require('../address');
   if (!(this instanceof Script)) {
     return new Script(from);
   }
@@ -778,6 +779,7 @@ Script.buildP2SHMultisigIn = function(pubkeys, threshold, signatures, opts) {
  * @param {(Address|PublicKey)} to - destination address or public key
  */
 Script.buildPublicKeyHashOut = function(to) {
+    Address = require('../address');
   $.checkArgument(!_.isUndefined(to));
   $.checkArgument(to instanceof PublicKey || to instanceof Address || _.isString(to));
   if (to instanceof PublicKey) {
@@ -831,6 +833,7 @@ Script.buildDataOut = function(data, encoding) {
  * @returns {Script} new pay to script hash script for given script
  */
 Script.buildScriptHashOut = function(script) {
+    Address = require('../address');
   $.checkArgument(script instanceof Script ||
     (script instanceof Address && script.isPayToScriptHash()));
   var s = new Script();
@@ -903,6 +906,7 @@ Script.prototype.toScriptHashOut = function() {
  * @return {Script} an output script built from the address
  */
 Script.fromAddress = function(address) {
+  Address = require('../address');
   address = Address(address);
   if (address.isPayToScriptHash()) {
     return Script.buildScriptHashOut(address);
@@ -937,6 +941,7 @@ Script.prototype.getAddressInfo = function(opts) {
  */
 Script.prototype._getOutputAddressInfo = function() {
   var info = {};
+  Address = require('../address');
   if (this.isScriptHashOut()) {
     info.hashBuffer = this.getData();
     info.type = Address.PayToScriptHash;
@@ -956,6 +961,7 @@ Script.prototype._getOutputAddressInfo = function() {
  */
 Script.prototype._getInputAddressInfo = function() {
   var info = {};
+  Address = require('../address');
   if (this.isPublicKeyHashIn()) {
     // hash the publickey found in the scriptSig
     info.hashBuffer = Hash.sha256ripemd160(this.chunks[1].buf);
